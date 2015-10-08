@@ -1,0 +1,9 @@
+---
+region: 1
+zone: 3
+disks:
+  -  sdb
+  -  sdc
+  -  sdd
+  -  sde
+

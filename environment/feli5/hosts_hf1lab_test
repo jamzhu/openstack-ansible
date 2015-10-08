@@ -1,0 +1,175 @@
+# Hosts
+feli5_controller1      ansible_ssh_host=10.224.242.223  ansible_connection=ssh  ansible_ssh_user=ocpadmin
+feli5_controller2      ansible_ssh_host=10.224.242.224  ansible_connection=ssh  ansible_ssh_user=ocpadmin
+feli5_controller3      ansible_ssh_host=10.224.242.225  ansible_connection=ssh  ansible_ssh_user=ocpadmin
+feli5_haproxy          ansible_ssh_host=10.224.242.222  ansible_connection=ssh  ansible_ssh_user=ocpadmin
+feli5_compute1         ansible_ssh_host=10.224.241.216  ansible_connection=ssh  ansible_ssh_user=ocpadmin
+feli5_compute2         ansible_ssh_host=10.224.241.217  ansible_connection=ssh  ansible_ssh_user=ocpadmin
+
+[all:vars]
+####################
+# Common
+####################
+
+# Domain Name
+domainname = qa.webex.com
+
+# DNS Name
+dnsname1 = 10.224.91.8
+dnsname2 = 10.224.30.4
+
+# NTP
+ntp_server = 10.224.241.129
+
+# ocp repo
+ocp_repo_path = etc/yum.repos.d/ocp.repo
+
+# log verbose
+verbose = True
+
+# log debug
+debug = True
+
+####################
+# MySQL
+####################
+db_root_password        = 123work
+mysql_vip               = 10.224.242.222
+mysql_vip_port          = 3306
+management_network      = 10.224.242.%
+
+############
+# RabbitMQ #
+############
+rabbitmq_vip                   = 10.224.242.222
+rabbitmq_vip_port              = 5672
+rabbit_ha_queues               = True
+rabbitmq_user                  = rabbituser
+rabbitmq_password              = rabbitpassword
+
+############
+# Keystone #
+############
+keystone_mysql_password        = keystonepassword
+keystone_admin_token           = 6ddbdc726d44d1ec146a
+keystone_admin_password        = admin
+keystone_admin_email           = feli5@cisco.com
+keystone_admin_url_vip         = 10.224.242.222
+keystone_admin_url_port        = 35357
+keystone_admin_url_protocol    = http
+keystone_service_url_vip       = 10.224.242.222
+keystone_service_url_port      = 5000
+keystone_service_url_protocol  = http
+
+############
+#  Glance  #
+############
+glance_mysql_password          = glancepassword
+glance_admin_password          = glance_service_password
+glance_admin_email             = feli5@cisco.com
+glance_service_url_vip         = 10.224.242.222
+glance_service_url_port        = 9292
+glance_service_url_protocol    = http
+glance_registry_url_vip        = 10.224.242.222
+glance_registry_url_port       = 9191
+glance_registry_url_protocol   = http
+glance_image_nfs               = 10.224.242.222:/vol/glance_images
+
+############
+#   Nova   #
+############
+nova_mysql_password            = novapassword
+nova_admin_password            = nova_service_password
+nova_admin_email               = feli5@cisco.com
+nova_service_url_vip           = 10.224.242.222
+nova_service_url_port          = 8774
+nova_service_url_protocol      = http
+nova_vnc_vip                   = 10.224.242.222
+nova_vnc_port                  = 6080
+nova_vnc_protocol              = http
+nova_metadata_ip               = 10.224.242.222
+nova_metadata_port             = 8775
+# Modify this to kvm in phy
+virt_type                      = qemu 
+
+############
+#  Neutron #
+############
+neutron_mysql_password          = neutronpassword
+neutron_admin_password          = neutron_service_password
+neutron_admin_email             = feli5@cisco.com
+neutron_service_url_vip         = 10.224.242.222
+neutron_service_url_port        = 9696
+neutron_service_url_protocol    = http
+type_drivers                    = vlan
+tenant_network_types            = vlan
+network_vlan_ranges             = physnet1:500:599
+mechanism_drivers               = openvswitch
+enable_security_group           = True
+firewall_driver                 = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver
+l2_population                   = False
+interface_driver                = neutron.agent.linux.interface.OVSInterfaceDriver
+use_namespaces                  = True
+metadata_proxy_shared_secret    = ac0a3b82fe118c8cd169
+
+
+############
+#  Horizon #
+############
+horizon_vip                     = 10.224.242.222
+horizon_vport                   = 80
+ALLOWED_HOSTS                   = ['10.224.242.222']
+
+############
+#  Monitor #
+############
+# server side configuration
+# time_zone                       = Asia/Shanghai
+# zabbix_mysql_password           = zabbix
+# client side configuration
+# zabbix_server                   = 192.168.56.99
+
+[controller]
+feli5_controller1
+feli5_controller2
+feli5_controller3
+
+[controller1]
+feli5_controller1
+
+[controller2]
+feli5_controller2
+
+[controller3]
+feli5_controller3
+
+[network]
+feli5_controller1
+feli5_controller2
+feli5_controller3
+
+[compute:children]
+compute_local
+compute_nfs1
+compute_nfs2
+
+[compute_local]
+
+[compute_nfs1]
+feli5_compute1
+
+[compute_nfs1:vars]
+nova_instance_nfs = 10.224.242.222:/vol/nova_instance1
+
+[compute_nfs2]
+feli5_compute2
+
+[compute_nfs2:vars]
+nova_instance_nfs = 10.224.242.222:/vol/nova_instance2
+
+[haproxy]
+feli5_haproxy
+
+[monitor]
+
+[add]
